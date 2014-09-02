@@ -1,0 +1,88 @@
+/*
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+Type Functions and Mixins
+
+Functions and Mixins to work with type
+These basic functions assist with various typography related styles in CSS.
+Many functions assist with correctly handling maths involved with line heights,
+unit conversions, etc.
+
+References:
+- jonny gotham (https://github.com/jonnygotham)
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+*/
+
+
+/* ::::::::::::::::::::::::::::::::::::::::::::::::::
+    FUNCTIONS
+   :::::::::::::::::::::::::::::::::::::::::::::::::: */
+
+// Line Height
+// Returns a scaled line height for a given type size
+// ...............................................
+@function lineHeight($typesize, $scale: 1.5) {
+  @return $typesize * $scale;
+}
+
+// Optimal Measure
+// cpl: characters per line, mu: character constant
+// Returns the width corresponding to the optimal measure for a given type size
+// ...............................................
+@function optMeasure($typesize, $cpl: 66, $mu: 2.3) {
+  @return $cpl * ($typesize / $mu);
+}
+
+// Modular Scale
+// scale_direction: 0 descends scale, 1 ascends scale
+// iterations: number of iterations to scale the value
+// ...............................................
+@function modScale($scale_direction, $iterations, $base: $base_typesize) {
+  @if $scale_direction == 1 {
+    @for $i from 0 through $iterations {
+      $base: $base * $ratio_golden;
+    }
+    @return $base;
+  } @else if $scale_direction == 0 {
+    @for $i from 0 through $iterations {
+      $base: $base / $ratio_golden;
+    }
+    @return $base;
+  }
+}
+
+// Rhythmn Adjust
+// core_height: current line height for type size
+// ceiling: recursive variable for multiple of base_height
+// returns an numerical value for the distance between the current line height
+// and the next fitting marker for
+// consistent vertical rhythm.
+// ...............................................
+@function rhythmAdjust($core_height, $ceiling: $base_height) {
+  @if $ceiling < $core_height {
+    $ceiling: $ceiling + $base_height;
+    @return rhythmAdjust($core_height, $ceiling);
+  } @else {
+    $difference: $ceiling - $core_height;
+    @return $difference;
+  }
+}
+
+
+
+
+/* ::::::::::::::::::::::::::::::::::::::::::::::::::
+    MIXINS
+   :::::::::::::::::::::::::::::::::::::::::::::::::: */
+
+// End Ellipsis
+// Returns the CSS required to end a line of text with an ellpsis
+// ...............................................
+@mixin endEllipsis {
+  -o-text-overflow: ellipsis;
+  -webkit-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
